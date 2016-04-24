@@ -1,9 +1,9 @@
 'use strict';
 var debug = require('debug')('middleware:error');
-
+/*jshint -W098 */
 function errors(err, req, res, next) {
+  /*jshint +W098 */
   var data;
-  var help;
 
   debug(req.app.locals);
   debug(err.stack);

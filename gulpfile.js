@@ -1,18 +1,18 @@
+'use strict';
+
 var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
-  plumber = require('gulp-plumber'),
   livereload = require('gulp-livereload');
 
-
-gulp.task('develop', function () {
+gulp.task('develop', function() {
   livereload.listen();
   nodemon({
     script: 'bin/www',
     ext: 'js handlebars coffee',
     stdout: false
-  }).on('readable', function () {
-    this.stdout.on('data', function (chunk) {
-      if(/^Express server listening on port/.test(chunk)){
+  }).on('readable', function() {
+    this.stdout.on('data', function(chunk) {
+      if (/^Express server listening on port/.test(chunk)) {
         livereload.changed(__dirname);
       }
     });
