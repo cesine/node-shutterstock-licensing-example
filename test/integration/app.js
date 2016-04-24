@@ -1,3 +1,5 @@
+'use strict';
+
 var expect = require('chai').expect;
 var supertest = require('supertest');
 
@@ -8,18 +10,58 @@ describe('app', function() {
     expect(app).to.be.a('function');
   });
 
-  it('should handle routes which are not found', function(done) {
-    supertest(app)
-      .get('/notexistant')
-      .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect('Content-Length', '2873')
-      .expect(404)
-      .end(function(err, res) {
-        if (err) throw err;
+  describe('is production ready', function() {
+    it('should handle pages which are not found', function(done) {
+      supertest(app)
+        .get('/notexistant')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(404)
+        .end(function(err, res) {
+          if (err) throw err;
 
-        expect(res.body).to.deep.equal({});
+          expect(res.text).to.contain('shutterstock-licensing-example-node/app.js');
+          expect(res.body).to.deep.equal({});
 
-        done();
-      });
+          done();
+        });
+    });
+
+    it('should handle api endpoints which are not found', function(done) {
+      app.locals.ENV = 'production';
+
+      supertest(app)
+        .get('/v1/notexistant')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect(404)
+        .end(function(err, res) {
+          if (err) throw err;
+
+          expect(res.body).to.deep.equal({
+            error: {},
+            message: 'Not Found',
+            status: 404
+          });
+
+          done();
+        });
+    });
+
+    it('should expose stack traces in dev', function(done) {
+      app.locals.ENV = 'dev';
+      app.set('view engine', 'notarealengine');
+
+      supertest(app)
+        .get('/')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(500)
+        .end(function(err, res) {
+          if (err) throw err;
+
+          expect(res.text).to.contain('express/lib/view.js');
+          expect(res.body).to.deep.equal({});
+
+          done();
+        });
+    });
   });
 });
