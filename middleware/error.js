@@ -1,12 +1,14 @@
 'use strict';
+
 var debug = require('debug')('middleware:error');
+
 /*jshint -W098 */
 function errors(err, req, res, next) {
   /*jshint +W098 */
   var data;
 
   debug(req.app.locals);
-  debug(err.stack);
+  // debug(err.stack);
 
   if (req.app.locals.ENV === 'dev') {
     // expose stack traces
