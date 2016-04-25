@@ -29,6 +29,20 @@ passport.deserializeUser(function(username, done) {
   done(null, {
     username: username
   });
+  //   User.findOne({
+  //     _id: id
+  //   }).exec(function(err, user) {
+  //     if (err) {
+  //       console.log('Error loading user: ' + err);
+  //       return;
+  //     }
+
+  //     if (user) {
+  //       return done(null, user);
+  //     } else {
+  //       return done(null, false);
+  //     }
+  //   })
 });
 
 /**
@@ -58,6 +72,16 @@ passport.use(new ShutterstockStrategy({
 
 function auth(req, res, next) {
   req.authenticated = false;
+
+  // if (req.session && req.session.error) {
+  //   var msg = req.session.error;
+  //   req.session.error = undefined;
+  //   // TODO why is this poluting the app?
+  //   req.app.locals.errorMessage = msg;
+  // } else {
+  //   // TODO why is this poluting the app?
+  //   req.app.locals.errorMessage = undefined;
+  // }
 
   next();
 }

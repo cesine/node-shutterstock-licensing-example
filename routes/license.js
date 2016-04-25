@@ -10,7 +10,7 @@ var router = express.Router();
  * session), the request will proceed.  Otherwise, the user will be
  * redirected to the login page.
  */
-var ensureAuthenticated = function(req, res, next) {
+function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -21,11 +21,11 @@ var getImage = function(req, res) {
   res.send({
     user: req.user,
     image: {
-      id: req.params.image_id
+      id: req.params.imageId
     }
   });
 };
-router.get('/:image_id', ensureAuthenticated, getImage);
+router.get('/:imageId', ensureAuthenticated, getImage);
 
 module.exports.ensureAuthenticated = ensureAuthenticated;
 module.exports.getImage = getImage;

@@ -53,7 +53,9 @@ app.use(bodyParser.urlencoded({
  */
 app.use(cookieParser());
 app.use(session({
-  secret: 'wieoo923iweosdoijo'
+  secret: 'wieoo923iweosdoijo',
+  // resave: true,
+  // saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());

@@ -5,7 +5,7 @@ var sinon = require('sinon');
 
 var license = require('./../../../routes/license');
 
-describe.only('license', function() {
+describe('license', function() {
   var req;
   var res;
 
@@ -19,7 +19,7 @@ describe.only('license', function() {
         return true;
       },
       params: {
-        image_id: '123'
+        imageId: '123'
       }
     };
     res = {
@@ -27,7 +27,7 @@ describe.only('license', function() {
       redirect: sinon.spy(),
       send: sinon.spy()
     };
-  })
+  });
 
   it('should load', function() {
     expect(license).to.be.a('object');
@@ -45,7 +45,7 @@ describe.only('license', function() {
     sinon.assert.calledWith(res.send, {
       user: req.user,
       image: {
-        id: req.params.image_id
+        id: req.params.imageId
       }
     });
 

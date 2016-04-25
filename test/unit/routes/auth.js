@@ -33,6 +33,7 @@ describe('auth', function() {
   });
 
   it('should login', function() {
+    var next = sinon.spy();
     var req = {
       user: {
         username: 'anoymous',
@@ -44,13 +45,14 @@ describe('auth', function() {
       send: sinon.spy()
     };
 
-    auth.getLogin(req, res);
+    auth.getLogin(req, res, next);
 
     sinon.assert.calledWith(res.render, 'login', {
       user: req.user,
       json: JSON.stringify(req.user, null, 2)
     });
 
+    expect(next.calledOnce).to.equal(false);
     expect(res.send.calledOnce).to.equal(false);
   });
 });
