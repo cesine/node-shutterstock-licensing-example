@@ -1,18 +1,22 @@
 'use strict';
 
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var debug = require('debug')('app');
+var exphbs = require('express-handlebars');
 var express = require('express');
-var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var exphbs = require('express-handlebars');
+var passport = require('passport');
+var path = require('path');
+var session = require('express-session');
 
-var auth = require('./middleware/auth');
+var authMiddleware = require('./middleware/auth');
 var errors = require('./middleware/error');
 var routes = require('./routes/index');
-var users = require('./routes/user');
+var authRoutes = require('./routes/auth').router;
+var licenseRoutes = require('./routes/license').router;
+var userRoutes = require('./routes/user');
 
 var app = express();
 
@@ -20,7 +24,15 @@ var env = process.env.NODE_ENV || 'dev';
 app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env === 'dev';
 
-// view engine setup
+/**
+ * Config
+ */
+app.use(favicon(__dirname + '/public/img/favicon.ico'));
+app.use(logger(env));
+
+/**
+ * Views
+ */
 app.engine('handlebars', exphbs({
   defaultLayout: 'main',
   partialsDir: ['views/partials/']
@@ -28,21 +40,41 @@ app.engine('handlebars', exphbs({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
-app.use(favicon(__dirname + '/public/img/favicon.ico'));
-app.use(logger(env));
+/**
+ * Body parsers
+ */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+/**
+ * Persistant sessions and authentication
+ */
 app.use(cookieParser());
+app.use(session({
+  secret: 'wieoo923iweosdoijo'
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(authMiddleware);
+
+/**
+ * Serve static files
+ */
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(auth);
-
+/**
+ * Routes
+ */
+app.use('/v1/auth', authRoutes);
+app.use('/v1/license', licenseRoutes);
+app.use('/v1/users', userRoutes);
 app.use('/', routes);
-app.use('/v1/users', users);
 
-/// catch 404 and forward to error handler
+/**
+ * If not found
+ */
 app.use(function(req, res, next) {
   debug(req.url + ' was not found');
   var err = new Error('Not Found');
@@ -50,6 +82,9 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+/**
+ * Attach error handler
+ */
 app.use(errors);
 
 module.exports = app;
