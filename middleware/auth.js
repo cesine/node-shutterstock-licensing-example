@@ -10,6 +10,8 @@ var SHUTTERSTOCK_CLIENT_SECRET = process.env.SHUTTERSTOCK_CLIENT_SECRET ||
   '--insert-shutterstock-client-secret-here--';
 var URL = process.env.URL || 'http://localhost:' + process.env.PORT;
 
+var TEMP_USER_CACHE = {};
+
 /**
  * Passport session setup. To support persistent login sessions,
  * Passport needs to be able to serialize users into and deserialize
@@ -21,14 +23,21 @@ var URL = process.env.URL || 'http://localhost:' + process.env.PORT;
  */
 passport.serializeUser(function(user, done) {
   debug('serializeUser ' + user.username);
+
+  TEMP_USER_CACHE[user.username] = user;
+
   done(null, user.username);
 });
 
 passport.deserializeUser(function(username, done) {
   debug('deserializeUser ' + username);
-  done(null, {
-    username: username
-  });
+
+  var user = TEMP_USER_CACHE[username] || {
+    username: username,
+    from: 'middleware/auth'
+  };
+
+  done(null, user);
   //   User.findOne({
   //     _id: id
   //   }).exec(function(err, user) {
@@ -60,6 +69,7 @@ passport.use(new ShutterstockStrategy({
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
     process.nextTick(function() {
+      profile.token = accessToken;
       debug(profile);
       // To keep the example simple, the user's Shutterstock profile is returned to
       // represent the logged-in user.  In a typical application, you would want

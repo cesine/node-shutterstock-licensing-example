@@ -10,9 +10,12 @@ router.get('/', function(req, res) {
 
 /* GET user details */
 router.get('/:username', function(req, res) {
-  res.json({
-    username: req.params.username
-  });
+  req.user = req.user || {
+    username: req.params.username,
+    from: 'routes/user'
+  }
+
+  res.json(req.user);
 });
 
 module.exports = router;
