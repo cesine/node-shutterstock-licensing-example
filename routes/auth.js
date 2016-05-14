@@ -85,7 +85,7 @@ function getShutterstock(req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.redirect('/v1/users/' + user.username);
+      return res.redirect('/');
     });
   })(req, res, next);
 }
@@ -113,7 +113,7 @@ function getShutterstockCallback(req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.redirect('/v1/users/' + user.username);
+      return res.redirect('/');
     });
   })(req, res, next);
 }
