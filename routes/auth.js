@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('auth');
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
@@ -71,9 +72,22 @@ function getLogout(req, res) {
  * [getShutterstock description]
  * @return {[type]} [description]
  */
-function getShutterstock() {
-  // The request will be redirected to Shutterstock for authentication,
-  // so this function will not be called.
+function getShutterstock(req, res, next) {
+  passport.authenticate('shutterstock', function(err, user, info) {
+    debug(arguments)
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect('/v1/auth/login');
+    }
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/v1/users/' + user.username);
+    });
+  })(req, res, next);
 }
 
 /**
@@ -86,17 +100,29 @@ function getShutterstock() {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-function getShutterstockCallback(req, res) {
-  res.redirect('/v1/auth/login');
+function getShutterstockCallback(req, res, next) {
+  passport.authenticate('shutterstock', function(err, user, info) {
+    debug(arguments)
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect('/v1/auth/login');
+    }
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/v1/users/' + user.username);
+    });
+  })(req, res, next);
 }
 
 router.get('/admin', getAdmin);
 router.get('/login', getLogin);
 router.get('/logout', getLogout);
-router.get('/shutterstock', passport.authenticate('shutterstock'), getShutterstock);
-router.get('/shutterstock/callback', passport.authenticate('shutterstock', {
-  failureRedirect: '/v1/auth/login'
-}), getShutterstockCallback);
+router.get('/shutterstock', getShutterstock);
+router.get('/shutterstock/callback', getShutterstockCallback);
 
 module.exports.getAdmin = getAdmin;
 module.exports.getLogin = getLogin;
