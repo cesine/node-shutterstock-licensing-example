@@ -8,7 +8,7 @@ function errors(err, req, res, next) {
   var data;
 
   debug(req.app.locals);
-  // debug(err.stack);
+  debug(err.stack);
 
   if (req.app.locals.ENV === 'dev') {
     // expose stack traces
@@ -26,7 +26,7 @@ function errors(err, req, res, next) {
 
   data.status = err.status || 500;
 
-  res.status(err.status);
+  res.status(data.status);
 
   if (/^\/v1/.test(req.url)) {
     res.json(data);

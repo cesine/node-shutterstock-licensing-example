@@ -1,0 +1,11 @@
+<h1>{{title}}</h1>
+
+<button onclick="login('shutterstock')">
+  Login with Shutterstock
+</button>
+
+<script>
+var login = function(provider) {
+  window.location.replace('/v1/auth/' + provider);
+};
+</script>
