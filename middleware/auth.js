@@ -2,6 +2,7 @@
 
 var debug = require('debug')('middleware:auth');
 var passport = require('passport');
+var Sequelize = require('sequelize');
 var ShutterstockStrategy = require('passport-shutterstock-oauth2').Strategy;
 
 var SHUTTERSTOCK_CLIENT_ID = process.env.SHUTTERSTOCK_CLIENT_ID ||
@@ -10,48 +11,90 @@ var SHUTTERSTOCK_CLIENT_SECRET = process.env.SHUTTERSTOCK_CLIENT_SECRET ||
   '--insert-shutterstock-client-secret-here--';
 var URL = process.env.URL || 'http://localhost:' + process.env.PORT;
 
-var TEMP_USER_CACHE = {};
+var sequelize = new Sequelize('database', 'username', 'password', {
+  dialect: 'sqlite',
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000
+  },
+  storage: 'db.sqlite'
+});
+
+var User = sequelize.define('users', {
+  givenName: Sequelize.STRING,
+  language: Sequelize.STRING,
+  username: Sequelize.STRING
+});
 
 /**
  * Passport session setup. To support persistent login sessions,
  * Passport needs to be able to serialize users into and deserialize
  * users out of the session.  Typically, this will be as simple as
  * storing the user ID when serializing, and finding the user by ID
- * when deserializing.  However, since this example does not have a
- * database of user records, the complete Shutterstock profile is
- * serialized and deserialized.
+ * when deserializing.
+ *
  */
-passport.serializeUser(function(user, done) {
-  debug('serializeUser ' + user.username);
+passport.serializeUser(function(profile, done) {
+  debug('serializeUser ' + profile.username);
+  if (profile && profile.name && !profile.name.givenName) {
+    profile.name.givenName = profile.username;
+  }
 
-  TEMP_USER_CACHE[user.username] = user;
+  function create() {
+    return User.create({
+      givenName: profile.name.givenName,
+      language: profile.language,
+      username: profile.username,
+    }).then(function(saved) {
+      debug(saved);
 
-  done(null, user.username);
+      return done(null, profile.username);
+    }, done);
+  }
+
+  sequelize.sync().then(function() {
+    return User.find({
+      where: {
+        username: profile.username
+      }
+    }).then(function(dbUser) {
+      // Create the user
+      if (!dbUser) {
+        return create();
+      }
+
+      // Update the user from the provider
+      dbUser.language = profile.language;
+      dbUser.givenName = profile.name.givenName;
+
+      return dbUser.save().then(function(saved) {
+        debug(saved);
+
+        return done(null, profile.username);
+      }, done);
+    }, function(err) {
+      debug(err);
+
+      // Create the user
+      create();
+    });
+  }, done);
 });
 
 passport.deserializeUser(function(username, done) {
   debug('deserializeUser ' + username);
 
-  var user = TEMP_USER_CACHE[username] || {
-    username: username,
-    from: 'middleware/auth'
-  };
-
-  done(null, user);
-  //   User.findOne({
-  //     _id: id
-  //   }).exec(function(err, user) {
-  //     if (err) {
-  //       console.log('Error loading user: ' + err);
-  //       return;
-  //     }
-
-  //     if (user) {
-  //       return done(null, user);
-  //     } else {
-  //       return done(null, false);
-  //     }
-  //   })
+  sequelize.sync()
+    .then(function() {
+      return User.findOne({
+        where: {
+          username: username
+        }
+      }).then(function(user) {
+        done(null, user);
+      }, done);
+    }, done);
 });
 
 /**
