@@ -134,8 +134,6 @@ passport.use(new ShutterstockStrategy({
 ));
 
 function auth(req, res, next) {
-  req.authenticated = false;
-
   // if (req.session && req.session.error) {
   //   var msg = req.session.error;
   //   req.session.error = undefined;

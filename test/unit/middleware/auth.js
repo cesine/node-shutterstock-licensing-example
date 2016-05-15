@@ -11,16 +11,6 @@ describe('auth', function() {
     expect(auth).to.be.a('function');
   });
 
-  it('should set authenticated false', function(done) {
-    var req = {};
-
-    auth(req, null, function() {
-      expect(req.authenticated).to.be.false;
-
-      done();
-    });
-  });
-
   describe('passport', function() {
     beforeEach(function(done) {
       passport.serializeUser({
