@@ -115,7 +115,7 @@ passport.deserializeUser(function(username, callback) {
 passport.use(new ShutterstockStrategy({
     clientID: SHUTTERSTOCK_CLIENT_ID,
     clientSecret: SHUTTERSTOCK_CLIENT_SECRET,
-    callbackURL: URL + '/v1/auth/shutterstock/callback',
+    callbackURL: URL + '/v1/auth/login/shutterstock/callback',
     scope: ['licenses.create', 'licenses.view', 'purchases.view', 'user.view']
   },
   function(accessToken, refreshToken, profile, callback) {

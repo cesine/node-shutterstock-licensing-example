@@ -32,27 +32,53 @@ describe('auth', function() {
     expect(res.send.calledOnce).to.equal(false);
   });
 
-  it('should login', function() {
-    var next = sinon.spy();
+  it('should render login if user is not defined', function() {
     var req = {
-      user: {
-        username: 'anoymous',
-        email: 'anony@mouse.org'
+      isAuthenticated: function() {
+        return false;
       }
     };
     var res = {
+      redirect: sinon.spy(),
       render: sinon.spy(),
-      send: sinon.spy()
     };
 
-    auth.getLogin(req, res, next);
+    auth.getLogin(req, res);
 
-    sinon.assert.calledWith(res.render, 'login', {
-      user: req.user,
-      json: JSON.stringify(req.user, null, 2)
-    });
+    sinon.assert.calledWith(res.render, 'login', {});
+  });
 
-    expect(next.calledOnce).to.equal(false);
-    expect(res.send.calledOnce).to.equal(false);
+  it('should not render login if user is authenticated', function() {
+    var req = {
+      isAuthenticated: function() {
+        return true;
+      }
+    };
+    var res = {
+      redirect: sinon.spy(),
+      render: sinon.spy(),
+    };
+
+    auth.getLogin(req, res);
+
+    sinon.assert.calledWith(res.redirect, '/');
+    expect(res.render.calledOnce).to.equal(false);
+  });
+
+  it('should not authenticate with shutterstock if user is authenticated', function() {
+    var req = {
+      isAuthenticated: function() {
+        return true;
+      }
+    };
+    var res = {
+      redirect: sinon.spy(),
+      render: sinon.spy(),
+    };
+
+    auth.getShutterstock(req, res);
+
+    sinon.assert.calledWith(res.redirect, '/');
+    expect(res.render.calledOnce).to.equal(false);
   });
 });
