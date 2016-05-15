@@ -28,9 +28,9 @@ describe('error', function() {
       res.status = sinon.spy();
     });
 
-    describe('in dev', function() {
+    describe('in development', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'dev';
+        process.env.NODE_ENV = 'development';
       });
 
       it('should expose stack traces', function() {
@@ -47,9 +47,9 @@ describe('error', function() {
 
     });
 
-    describe('in prod', function() {
+    describe('in production', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'production';
+        process.env.NODE_ENV = 'production';
       });
 
       it('should not expose stack traces', function() {
@@ -74,9 +74,9 @@ describe('error', function() {
       res.status = sinon.spy();
     });
 
-    describe('in dev', function() {
+    describe('in development', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'dev';
+        process.env.NODE_ENV = 'development';
       });
 
       it('should expose stack traces', function() {
@@ -93,9 +93,9 @@ describe('error', function() {
 
     });
 
-    describe('in prod', function() {
+    describe('in production', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'production';
+        process.env.NODE_ENV = 'production';
       });
 
       it('should not expose stack traces', function() {

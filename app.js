@@ -20,9 +20,8 @@ var userRoutes = require('./routes/user');
 
 var app = express();
 
-var env = process.env.NODE_ENV || 'dev';
-app.locals.ENV = env;
-app.locals.ENV_DEVELOPMENT = env === 'dev';
+var env = process.env.NODE_ENV || 'development';
+app.locals.ENV_DEVELOPMENT = env == 'development';
 
 /**
  * Config
@@ -54,8 +53,8 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(session({
   secret: 'wieoo923iweosdoijo',
-  // resave: true,
-  // saveUninitialized: true
+  resave: true,
+  saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());

@@ -7,10 +7,9 @@ function errors(err, req, res, next) {
   /*jshint +W098 */
   var data;
 
-  debug(req.app.locals);
   debug(err.stack);
 
-  if (req.app.locals.ENV === 'dev') {
+  if (process.env.NODE_ENV === 'development') {
     // expose stack traces
     data = {
       message: err.message,
@@ -24,11 +23,15 @@ function errors(err, req, res, next) {
     };
   }
 
-  data.status = err.status || 500;
+  data.status = err.status || err.statusCode || 500;
+
+  if (data.status === 500 && data.message === 'Failed to obtain access token') {
+    data.status = 403;
+  }
 
   res.status(data.status);
 
-  if (/^\/v1/.test(req.url)) {
+  if (/^\/v1/.test(req.url) && data.status !== 403) {
     res.json(data);
   } else {
     res.render('error', data);

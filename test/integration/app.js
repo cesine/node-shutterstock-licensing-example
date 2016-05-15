@@ -12,6 +12,8 @@ describe('app', function() {
 
   describe('is production ready', function() {
     it('should handle pages which are not found', function(done) {
+      process.env.NODE_ENV = 'production';
+
       supertest(app)
         .get('/notexistant')
         .expect('Content-Type', 'text/html; charset=utf-8')
@@ -19,7 +21,7 @@ describe('app', function() {
         .end(function(err, res) {
           if (err) throw err;
 
-          expect(res.text).to.contain('shutterstock-licensing-example-node/app.js');
+          expect(res.text).not.to.contain('shutterstock-licensing-example-node/app.js');
           expect(res.body).to.deep.equal({});
 
           done();
@@ -27,7 +29,7 @@ describe('app', function() {
     });
 
     it('should handle api endpoints which are not found', function(done) {
-      app.locals.ENV = 'production';
+      process.env.NODE_ENV = 'production';
 
       supertest(app)
         .get('/v1/notexistant')
@@ -47,7 +49,7 @@ describe('app', function() {
     });
 
     it('should expose stack traces in dev', function(done) {
-      app.locals.ENV = 'dev';
+      process.env.NODE_ENV = 'development';
       app.set('view engine', 'notarealengine');
 
       supertest(app)
