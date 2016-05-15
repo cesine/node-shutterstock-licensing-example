@@ -14,9 +14,7 @@ describe('/v1/users', function() {
       .end(function(err, res) {
         if (err) throw err;
 
-        expect(res.body).to.deep.equal({
-          username: 'anonymouse'
-        });
+        expect(res.body).to.deep.equal([]);
 
         done();
       });

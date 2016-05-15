@@ -35,8 +35,12 @@ var User = sequelize.define('users', {
  * when deserializing.
  *
  */
-passport.serializeUser(function(profile, done) {
+passport.serializeUser(function(profile, callback) {
   debug('serializeUser ' + profile.username);
+  if (!profile || !profile.name) {
+    return callback(new Error('User profile must have `name` property'));
+  }
+
   if (profile && profile.name && !profile.name.givenName) {
     profile.name.givenName = profile.username;
   }
@@ -49,8 +53,8 @@ passport.serializeUser(function(profile, done) {
     }).then(function(saved) {
       debug(saved);
 
-      return done(null, profile.username);
-    }, done);
+      return callback(null, profile.username);
+    }, callback);
   }
 
   sequelize.sync().then(function() {
@@ -71,18 +75,18 @@ passport.serializeUser(function(profile, done) {
       return dbUser.save().then(function(saved) {
         debug(saved);
 
-        return done(null, profile.username);
-      }, done);
+        return callback(null, profile.username);
+      }, callback);
     }, function(err) {
       debug(err);
 
       // Create the user
       create();
     });
-  }, done);
+  }, callback);
 });
 
-passport.deserializeUser(function(username, done) {
+passport.deserializeUser(function(username, callback) {
   debug('deserializeUser ' + username);
 
   sequelize.sync()
@@ -92,9 +96,14 @@ passport.deserializeUser(function(username, done) {
           username: username
         }
       }).then(function(user) {
-        done(null, user);
-      }, done);
-    }, done);
+        if (!user) {
+          debug('Unable to find the user ' + username);
+          return callback(null, null);
+        }
+
+        callback(null, user.toJSON());
+      }, callback);
+    }, callback);
 });
 
 /**
@@ -109,7 +118,7 @@ passport.use(new ShutterstockStrategy({
     callbackURL: URL + '/v1/auth/shutterstock/callback',
     scope: ['licenses.create', 'licenses.view', 'purchases.view', 'user.view']
   },
-  function(accessToken, refreshToken, profile, done) {
+  function(accessToken, refreshToken, profile, callback) {
     // asynchronous verification, for effect...
     process.nextTick(function() {
       profile.token = accessToken;
@@ -118,7 +127,7 @@ passport.use(new ShutterstockStrategy({
       // represent the logged-in user.  In a typical application, you would want
       // to associate the Shutterstock account with a user record in your database,
       // and return that user instead.
-      return done(null, profile);
+      return callback(null, profile);
     });
   }
 ));

@@ -22,23 +22,79 @@ describe('auth', function() {
   });
 
   describe('passport', function() {
-    it('should serialize to username', function() {
-      var done = sinon.spy();
-
+    beforeEach(function(done) {
       passport.serializeUser({
-        username: 'abc'
+        username: 'test-anonymouse',
+        name: {
+          givenName: 'Anony',
+          familyName: 'Mouse'
+        },
+        language: 'zh'
       }, done);
-
-      sinon.assert.calledWith(done, null, 'abc');
     });
 
-    it('should deserialize from username', function() {
-      var done = sinon.spy();
+    it('should serialize to username', function(done) {
+      var callback = sinon.spy();
 
-      passport.deserializeUser('efg', done);
+      passport.serializeUser({
+        username: 'test-abc',
+        name: {}
+      }, function() {
+        callback(arguments[0], arguments[1]);
 
-      sinon.assert.calledWith(done, null, {
-        username: 'efg'
+        sinon.assert.calledWith(callback, null, 'test-abc');
+
+        done();
+      });
+    });
+
+    it('should deserialize an existing user', function(done) {
+      var callback = sinon.spy();
+
+      passport.deserializeUser('test-anonymouse', function(err, user) {
+        callback(err, user);
+
+        sinon.assert.calledWith(callback, null, {
+          createdAt: user.createdAt,
+          givenName: 'Anony',
+          id: user.id,
+          language: 'zh',
+          updatedAt: user.updatedAt,
+          username: 'test-anonymouse'
+        });
+
+        done();
+      });
+    });
+
+    it('should return null if user not found', function(done) {
+      var callback = sinon.spy();
+
+      passport.deserializeUser('test-nonexistant-user', function() {
+        callback(arguments[0], arguments[1]);
+
+        sinon.assert.calledWith(callback, null, false);
+
+        done();
+      });
+    });
+
+    it('should update a user', function(done) {
+      passport.serializeUser({
+        username: 'test-anonymouse',
+        name: {
+          givenName: 'Albert',
+          familyName: 'Mouse'
+        },
+        language: 'ko'
+      }, function() {
+        passport.deserializeUser('test-anonymouse', function(err, user) {
+          expect(user.username).to.equal('test-anonymouse');
+          expect(user.language).to.equal('ko');
+          expect(user.givenName).to.equal('Albert');
+
+          done();
+        });
       });
     });
   });
