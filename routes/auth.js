@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('auth');
+var debug = require('debug')('passport:route:auth');
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();

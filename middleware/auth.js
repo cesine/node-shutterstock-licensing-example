@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('middleware:auth');
+var debug = require('debug')('passport:middleware:auth');
 var passport = require('passport');
 var Sequelize = require('sequelize');
 var ShutterstockStrategy = require('passport-shutterstock-oauth2').Strategy;
@@ -36,10 +36,11 @@ var User = sequelize.define('users', {
  *
  */
 passport.serializeUser(function(profile, callback) {
-  debug('serializeUser ' + profile.username);
+  debug('serializeUser ');
   if (!profile || !profile.name) {
-    return callback(new Error('User profile must have `name` property'));
+    return callback(null, null);
   }
+  debug('serializeUser ' + profile.username);
 
   if (profile && profile.name && !profile.name.givenName) {
     profile.name.givenName = profile.username;
