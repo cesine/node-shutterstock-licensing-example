@@ -69,7 +69,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Routes
  */
 app.use('/v1/auth', authRoutes);
-app.use('/v1/license', licenseRoutes);
+app.use('/v1/licenses', licenseRoutes);
 app.use('/v1/users', userRoutes);
 app.use('/', routes);
 

@@ -13,7 +13,6 @@ describe('license', function() {
     req = {
       user: {
         username: 'anoymous',
-        email: 'anony@mouse.org'
       },
       isAuthenticated: function() {
         return true;
@@ -32,16 +31,14 @@ describe('license', function() {
   it('should load', function() {
     expect(license).to.be.a('object');
     expect(license.router).to.be.a('function');
-    expect(license.getImage).to.be.a('function');
+    expect(license.licenseImage).to.be.a('function');
   });
 
   it('should license an image', function() {
     var next = sinon.spy();
 
-    license.ensureAuthenticated(req, res, next);
-    expect(next.calledOnce).to.equal(true);
+    license.licenseImage(req, res, next);
 
-    license.getImage(req, res);
     sinon.assert.calledWith(res.send, {
       user: req.user,
       image: {
@@ -49,6 +46,7 @@ describe('license', function() {
       }
     });
 
+    expect(next.calledOnce).to.equal(false);
     expect(res.redirect.calledOnce).to.equal(false);
     expect(res.render.calledOnce).to.equal(false);
   });
@@ -60,9 +58,9 @@ describe('license', function() {
       return false;
     };
 
-    license.ensureAuthenticated(req, res, next);
+    license.licenseImage(req, res, next);
 
-    sinon.assert.calledWith(res.redirect, '/v1/auth/login');
+    sinon.assert.calledWith(res.redirect, '/v1/auth/login/shutterstock?next=/v1/licenses/123');
 
     expect(next.calledOnce).to.equal(false);
     expect(res.send.calledOnce).to.equal(false);

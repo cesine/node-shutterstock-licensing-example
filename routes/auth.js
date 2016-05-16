@@ -6,6 +6,7 @@ var passport = require('passport');
 var router = express.Router();
 
 function getLogin(req, res) {
+  /* provided by passport */
   if (req.isAuthenticated()) {
     return res.redirect('/');
   }
@@ -14,7 +15,9 @@ function getLogin(req, res) {
 }
 
 function getLogout(req, res) {
+  /* provided by passport */
   req.logout();
+
   res.redirect('/');
 }
 
@@ -29,8 +32,14 @@ function getLogout(req, res) {
  * @return {[type]} [description]
  */
 function getShutterstock(req, res, next) {
+  var finalDestination = '/';
+  if (req.query && req.query.next) {
+    finalDestination = req.query.next;
+  }
+
+  /* provided by passport */
   if (req.isAuthenticated()) {
-    return res.redirect('/');
+    return res.redirect(finalDestination);
   }
 
   passport.authenticate('shutterstock', function(err, user, info) {
@@ -48,7 +57,7 @@ function getShutterstock(req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.redirect('/');
+      return res.redirect(finalDestination);
     });
   })(req, res, next);
 }
