@@ -24,7 +24,7 @@ describe('license', function() {
     res = {
       render: sinon.spy(),
       redirect: sinon.spy(),
-      send: sinon.spy()
+      json: sinon.spy()
     };
   });
 
@@ -39,10 +39,11 @@ describe('license', function() {
 
     license.licenseImage(req, res, next);
 
-    sinon.assert.calledWith(res.send, {
+    sinon.assert.calledWith(res.json, {
       user: req.user,
       image: {
-        id: req.params.imageId
+        id: req.params.imageId,
+        url: 'download'
       }
     });
 
@@ -63,7 +64,7 @@ describe('license', function() {
     sinon.assert.calledWith(res.redirect, '/v1/auth/login/shutterstock?next=/v1/licenses/123');
 
     expect(next.calledOnce).to.equal(false);
-    expect(res.send.calledOnce).to.equal(false);
+    expect(res.json.calledOnce).to.equal(false);
     expect(res.render.calledOnce).to.equal(false);
   });
 });
