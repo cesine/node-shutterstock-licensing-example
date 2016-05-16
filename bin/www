@@ -1,8 +1,12 @@
 #!/usr/bin/env node
-var app = require('../app');
 
-app.set('port', process.env.PORT || 3000);
+var app = require('../app');
+if (!process.env.PORT) {
+  throw new Error('PORT must be defined in env example:\n export PORT=3000');
+}
+app.set('port', process.env.PORT);
 
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
+  console.log('Try it: http://localhost:' + server.address().port + '/v1/licenses/images/254446402?subscriptionId=s21310628');
 });

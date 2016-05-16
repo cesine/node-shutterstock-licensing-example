@@ -43,7 +43,7 @@ function getShutterstock(req, res, next) {
   }
 
   passport.authenticate('shutterstock', function(err, user, info) {
-    debug(arguments);
+    debug('getShutterstock', arguments);
 
     if (err) {
       return next(err);
@@ -74,7 +74,7 @@ function getShutterstock(req, res, next) {
  */
 function getShutterstockCallback(req, res, next) {
   passport.authenticate('shutterstock', function(err, user, info) {
-    debug(arguments);
+    debug('getShutterstockCallback', arguments);
 
     if (err) {
       return next(err);
@@ -83,6 +83,10 @@ function getShutterstockCallback(req, res, next) {
     if (!user) {
       return res.redirect('/v1/auth/login');
     }
+
+    // retain the token for subsequent requests to the API in this session
+    req.session.token = user.token;
+    debug('session', req.session);
 
     req.logIn(user, function(err) {
       if (err) {
@@ -96,6 +100,7 @@ function getShutterstockCallback(req, res, next) {
 router.get('/login', getLogin);
 router.get('/logout', getLogout);
 router.get('/login/shutterstock', getShutterstock);
+router.get('/login/shutterstock/callback/:next', getShutterstockCallback);
 router.get('/login/shutterstock/callback', getShutterstockCallback);
 
 module.exports.getLogin = getLogin;

@@ -107,31 +107,28 @@ passport.deserializeUser(function(username, callback) {
     }, callback);
 });
 
-/**
- * Use the ShutterstockStrategy within Passport. Strategies in Passport
- * require a `verify` function, which accept credentials (in this case,
- * an accessToken, refreshToken, and Shutterstock profile), and invoke
- * a callback with a user object.
- */
-passport.use(new ShutterstockStrategy({
+passport.shutterstock = new ShutterstockStrategy({
     clientID: SHUTTERSTOCK_CLIENT_ID,
     clientSecret: SHUTTERSTOCK_CLIENT_SECRET,
     callbackURL: URL + '/v1/auth/login/shutterstock/callback',
     scope: ['licenses.create', 'licenses.view', 'purchases.view', 'user.view']
   },
   function(accessToken, refreshToken, profile, callback) {
-    // asynchronous verification, for effect...
-    process.nextTick(function() {
-      profile.token = accessToken;
-      debug(profile);
-      // To keep the example simple, the user's Shutterstock profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Shutterstock account with a user record in your database,
-      // and return that user instead.
-      return callback(null, profile);
-    });
+    profile.token = accessToken;
+    debug('profile', profile);
+    // To keep the example simple, the user's Shutterstock profile is returned to
+    // represent the logged-in user.
+    return callback(null, profile);
   }
-));
+)
+
+/**
+ * Use the ShutterstockStrategy within Passport. Strategies in Passport
+ * require a `verify` function, which accept credentials (in this case,
+ * an accessToken, refreshToken, and Shutterstock profile), and invoke
+ * a callback with a user object.
+ */
+passport.use(passport.shutterstock);
 
 function auth(req, res, next) {
   // if (req.session && req.session.error) {
