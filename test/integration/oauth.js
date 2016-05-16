@@ -8,7 +8,7 @@ var supertest = require('supertest');
 
 var app = require('./../../');
 
-describe('oauth', function() {
+describe('/v1/auth', function() {
   var nockApiAuthorizationRequest;
   var nockApiTokenRequest;
   var nockApiUserDetails;

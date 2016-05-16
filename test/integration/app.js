@@ -5,7 +5,7 @@ var supertest = require('supertest');
 
 var app = require('./../../');
 
-describe('app', function() {
+describe('/v1', function() {
   it('should load', function() {
     expect(app).to.be.a('function');
   });
