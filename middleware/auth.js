@@ -9,7 +9,7 @@ var SHUTTERSTOCK_CLIENT_ID = process.env.SHUTTERSTOCK_CLIENT_ID ||
   '--insert-shutterstock-client-id-here--';
 var SHUTTERSTOCK_CLIENT_SECRET = process.env.SHUTTERSTOCK_CLIENT_SECRET ||
   '--insert-shutterstock-client-secret-here--';
-var URL = process.env.URL || 'http://localhost:' + process.env.PORT;
+var URL = process.env.URL || 'https://localhost:' + process.env.PORT;
 
 var sequelize = new Sequelize('database', 'username', 'password', {
   dialect: 'sqlite',

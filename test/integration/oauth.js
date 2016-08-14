@@ -6,7 +6,8 @@ var nock = require('nock');
 var url = require('url');
 var supertest = require('supertest');
 
-var app = require('./../../');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+var app = process.env.URL || require('./../../');
 
 describe('/v1/auth', function() {
   var nockApiAuthorizationRequest;
