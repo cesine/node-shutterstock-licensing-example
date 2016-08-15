@@ -2,37 +2,20 @@
 
 var debug = require('debug')('passport:middleware:auth');
 var passport = require('passport');
-var Sequelize = require('sequelize');
 var ShutterstockStrategy = require('passport-shutterstock-oauth2').Strategy;
+
+var sequelize = require('../models/user').sequelize;
+var User = require('../models/user').User;
+
+/**
+ * ENV config
+ */
 
 var SHUTTERSTOCK_CLIENT_ID = process.env.SHUTTERSTOCK_CLIENT_ID ||
   '--insert-shutterstock-client-id-here--';
 var SHUTTERSTOCK_CLIENT_SECRET = process.env.SHUTTERSTOCK_CLIENT_SECRET ||
   '--insert-shutterstock-client-secret-here--';
 var URL = process.env.URL || 'https://localhost:' + process.env.PORT;
-
-/**
- * Use sequelize to create a database to store users
- */
-var sequelize = new Sequelize('database', 'username', 'password', {
-  dialect: 'sqlite',
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
-  storage: 'db.sqlite'
-});
-
-/**
- * User Schema
- * (add other fields if you wish to keep, this keeps the bare minimum)
- */
-var User = sequelize.define('users', {
-  givenName: Sequelize.STRING,
-  language: Sequelize.STRING,
-  username: Sequelize.STRING
-});
 
 /**
  * Passport session setup. To support persistent login sessions,
