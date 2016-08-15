@@ -28,9 +28,9 @@ describe('error', function() {
       res.status = sinon.spy();
     });
 
-    describe('in dev', function() {
+    describe('in development', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'dev';
+        process.env.NODE_ENV = 'development';
       });
 
       it('should expose stack traces', function() {
@@ -47,9 +47,9 @@ describe('error', function() {
 
     });
 
-    describe('in prod', function() {
+    describe('in production', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'production';
+        process.env.NODE_ENV = 'production';
       });
 
       it('should not expose stack traces', function() {
@@ -74,9 +74,9 @@ describe('error', function() {
       res.status = sinon.spy();
     });
 
-    describe('in dev', function() {
+    describe('in development', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'dev';
+        process.env.NODE_ENV = 'development';
       });
 
       it('should expose stack traces', function() {
@@ -91,11 +91,24 @@ describe('error', function() {
         });
       });
 
+      it('should communicate 403', function() {
+        var err = new Error('Failed to obtain access token');
+        err.status = 500;
+        error(err, req, res, function() {});
+
+        expect(res.render.called).to.equal(true);
+        sinon.assert.calledWith(res.status, 403);
+        sinon.assert.calledWith(res.render, 'error', {
+          error: err,
+          message: err.message,
+          status: 403
+        });
+      });
     });
 
-    describe('in prod', function() {
+    describe('in production', function() {
       beforeEach(function() {
-        req.app.locals.ENV = 'production';
+        process.env.NODE_ENV = 'production';
       });
 
       it('should not expose stack traces', function() {

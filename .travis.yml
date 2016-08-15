@@ -8,6 +8,7 @@ before_install:
   - npm install jshint -g
   - npm install mocha -g
   - npm install istanbul -g
+  - export PORT=3000
 
 script:
   - npm run lint

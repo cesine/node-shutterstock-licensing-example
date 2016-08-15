@@ -1,8 +1,16 @@
 #!/usr/bin/env node
+
+var https = require('https');
+
+var config = require('../config');
 var app = require('../app');
 
-app.set('port', process.env.PORT || 3000);
+if (!process.env.PORT) {
+  throw new Error('PORT must be defined in env example:\n export PORT=3000');
+}
+app.set('port', process.env.PORT);
 
-var server = app.listen(app.get('port'), function() {
+var server = https.createServer(config.ssl, app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
+  console.log('\nTry it: open https://localhost:' + server.address().port + '/v1/licenses/images/254446402?subscriptionId=s21310628 \n(NOTE: this is using a debug SSL certificate, you need to accept it to be able to load the pages.)\n');
 });
