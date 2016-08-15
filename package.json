@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "coverage": "istanbul cover _mocha -- --recursive test; istanbul check-coverage  --statements 95 --functions 100 --branches 88 --lines 95",
+    "coverage": "istanbul cover _mocha -- --recursive test; istanbul check-coverage  --statements 95 --functions 100 --branches 86 --lines 95",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "jshint middleware routes test app.js gulpfile.js",
     "start": "node ./bin/www",
