@@ -53,7 +53,7 @@ var licenseImage = function(req, res, next) {
       var json;
 
       if (err) {
-        next(err);
+        return next(err);
       }
 
       try {
@@ -100,7 +100,6 @@ var list = function(req, res, next) {
       try {
         json = JSON.parse(body);
       } catch (ex) {
-
         debug(ex);
         return next(new Error('Failed to parse licenses'));
       }

@@ -9,8 +9,10 @@ var license = require('./../../../routes/license');
 describe('license', function() {
   var req;
   var res;
+  var sandbox;
 
   beforeEach(function() {
+    sandbox = sinon.sandbox.create();
     req = {
       user: {
         username: 'anoymous',
@@ -35,10 +37,25 @@ describe('license', function() {
     };
   });
 
+  afterEach(function() {
+    sandbox.restore();
+  });
+
   it('should load', function() {
     expect(license).to.be.a('object');
     expect(license.router).to.be.a('function');
     expect(license.licenseImage).to.be.a('function');
+  });
+
+  it('should require a subscription', function(done) {
+    delete req.query;
+    req.url = '/v1/licenses/images/123';
+
+    license.licenseImage(req, res, function(err) {
+      expect(err.message).to.equal('Subscription ID is required');
+
+      done();
+    });
   });
 
   it('should license an image', function(done) {
@@ -85,7 +102,7 @@ describe('license', function() {
         }));
         expect(typeof callback).to.equal('function');
 
-        res.json(data);
+        callback(null, JSON.stringify(data));
       });
 
     license.licenseImage(req, res, expectations);
@@ -108,9 +125,18 @@ describe('license', function() {
     expect(res.render.calledOnce).to.equal(false);
   });
 
-  it('should list licenses', function(done) {
+  it('should use the session.token to list licenses', function() {
+    delete req.session.token;
     req.url = '/v1/licenses';
 
+    license.list(req, res);
+
+    sinon.assert.calledWith(res.redirect,
+      '/v1/auth/login/shutterstock?next=/v1/licenses');
+  });
+
+  it('should list licenses', function(done) {
+    req.url = '/v1/licenses';
 
     /*jshint camelcase: false */
     var data = {
@@ -154,7 +180,7 @@ describe('license', function() {
         expect(token).to.equal('abc123');
         expect(typeof callback).to.equal('function');
 
-        res.json(data);
+        callback(null, JSON.stringify(data));
       });
 
     license.list(req, res, expectations);
