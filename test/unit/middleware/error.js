@@ -91,6 +91,19 @@ describe('error', function() {
         });
       });
 
+      it('should communicate 403', function() {
+        var err = new Error('Failed to obtain access token');
+        err.status = 500;
+        error(err, req, res, function() {});
+
+        expect(res.render.called).to.equal(true);
+        sinon.assert.calledWith(res.status, 403);
+        sinon.assert.calledWith(res.render, 'error', {
+          error: err,
+          message: err.message,
+          status: 403
+        });
+      });
     });
 
     describe('in production', function() {

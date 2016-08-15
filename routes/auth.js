@@ -21,11 +21,7 @@ function getLogin(req, res) {
     return res.redirect(finalDestination || '/');
   }
 
-  if (finalDestination) {
-    finalDestination = '?next=' + finalDestination;
-  } else{
-    finalDestination = '';
-  }
+  finalDestination = finalDestination ? '?next=' + finalDestination : ''
 
   debug('will redirect to ' + finalDestination);
   res.redirect('/v1/auth/login/shutterstock' + finalDestination);
@@ -59,14 +55,11 @@ function getLogout(req, res) {
  * @return {Object}          Not used
  */
 function getShutterstock(req, res, next) {
-  var finalDestination = '/';
-  if (req.query && req.query.next) {
-    finalDestination = req.query.next;
-  }
+  var finalDestination = req.query ? req.query.next : '';
 
   /* provided by passport */
   if (req.isAuthenticated()) {
-    return res.redirect(finalDestination);
+    return res.redirect(finalDestination || '/');
   }
 
   /*jshint -W098 */
@@ -79,14 +72,15 @@ function getShutterstock(req, res, next) {
     }
 
     if (!user) {
-      return res.redirect('/v1/auth/login');
+      finalDestination = finalDestination ? '?next=' + finalDestination : ''
+      return res.redirect('/v1/auth/login' + finalDestination);
     }
 
     req.logIn(user, function(err) {
       if (err) {
         return next(err);
       }
-      return res.redirect(finalDestination);
+      return res.redirect(finalDestination || '/');
     });
   })(req, res, next);
 }
@@ -104,7 +98,7 @@ function getShutterstock(req, res, next) {
  * @return {Object}          Not used
  */
 function getShutterstockCallback(req, res, next) {
-  var finalDestination = req.query.next || req.params.next || '/';
+  var finalDestination = req.query ? req.query.next : '';
   /*jshint -W098 */
   passport.authenticate('shutterstock', function(err, user, info) {
     /*jshint +W098 */
@@ -115,7 +109,8 @@ function getShutterstockCallback(req, res, next) {
     }
 
     if (!user) {
-      return res.redirect('/v1/auth/login');
+      finalDestination = finalDestination ? '?next=' + finalDestination : ''
+      return res.redirect('/v1/auth/login' + finalDestination);
     }
 
     // retain the token for subsequent requests to the API in this session
@@ -126,7 +121,7 @@ function getShutterstockCallback(req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.redirect(finalDestination);
+      return res.redirect(finalDestination || '/');
     });
   })(req, res, next);
 }
