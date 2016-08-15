@@ -3,8 +3,13 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
-
+/**
+ * Renders home page
+ *
+ * @param  {Request}    req  Express Request
+ * @param  {Response}   res  Express Response
+ * @return {Object}          Not used
+ */
 router.get('/', function(req, res) {
   var userJSON;
 

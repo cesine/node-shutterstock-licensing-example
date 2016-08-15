@@ -1,12 +1,11 @@
 'use strict';
 
-var mocha = require('mocha');
 var expect = require('chai').expect;
 var nock = require('nock');
 var url = require('url');
 var supertest = require('supertest');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var app = process.env.URL || require('./../../');
 
 describe('/v1/auth', function() {
@@ -22,16 +21,25 @@ describe('/v1/auth', function() {
       .filteringRequestBody(/.*/, '*')
       .post('/v2/oauth/access_token')
       .reply(200, {
+        /*jshint camelcase: false */
         access_token: 'v2/zxy',
         token_type: 'Bearer'
+          /*jshint camelcase: true */
       });
+
+    nockApiAuthorizationRequest = nock('https://api.shutterstock.com')
+      .filteringRequestBody(/.*/, '*')
+      .get('/v2/oauth/authorize')
+      .reply(302, '');
 
     nockApiUserDetails = nock('https://api.shutterstock.com')
       .get('/v2/user')
       .reply(200, {
+        /* jshint camelcase: false */
         username: 'tester',
         customer_id: '1234',
         id: '1231234567890'
+          /* jshint camelcase: true */
       });
   });
 
@@ -50,7 +58,8 @@ describe('/v1/auth', function() {
           }
 
           var tokenUrl = url.parse(res.headers.location);
-          var cookie = res.headers['set-cookie'].join(' ')
+          var cookie = res.headers['set-cookie'].join(' ');
+
           var query = {};
 
           expect(tokenUrl).to.be.defined;
@@ -74,7 +83,9 @@ describe('/v1/auth', function() {
               expect(res.headers['set-cookie'][0]).not.to.equal(cookie);
               expect(res.headers.location).to.equal('/');
 
+              nockApiAuthorizationRequest.done();
               nockApiTokenRequest.done();
+
               nockApiUserDetails.done();
 
               done();

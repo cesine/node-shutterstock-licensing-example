@@ -11,6 +11,9 @@ var SHUTTERSTOCK_CLIENT_SECRET = process.env.SHUTTERSTOCK_CLIENT_SECRET ||
   '--insert-shutterstock-client-secret-here--';
 var URL = process.env.URL || 'https://localhost:' + process.env.PORT;
 
+/**
+ * Use sequelize to create a database to store users
+ */
 var sequelize = new Sequelize('database', 'username', 'password', {
   dialect: 'sqlite',
   pool: {
@@ -21,6 +24,10 @@ var sequelize = new Sequelize('database', 'username', 'password', {
   storage: 'db.sqlite'
 });
 
+/**
+ * User Schema
+ * (add other fields if you wish to keep, this keeps the bare minimum)
+ */
 var User = sequelize.define('users', {
   givenName: Sequelize.STRING,
   language: Sequelize.STRING,
@@ -30,10 +37,7 @@ var User = sequelize.define('users', {
 /**
  * Passport session setup. To support persistent login sessions,
  * Passport needs to be able to serialize users into and deserialize
- * users out of the session.  Typically, this will be as simple as
- * storing the user ID when serializing, and finding the user by ID
- * when deserializing.
- *
+ * users out of the session.
  */
 passport.serializeUser(function(profile, callback) {
   debug('serializeUser ');
@@ -87,6 +91,11 @@ passport.serializeUser(function(profile, callback) {
   }, callback);
 });
 
+/**
+ * Passport session setup. To support persistent login sessions,
+ * Passport needs to be able to serialize users into and deserialize
+ * users out of the session.
+ */
 passport.deserializeUser(function(username, callback) {
   debug('deserializeUser ' + username);
 
@@ -107,39 +116,48 @@ passport.deserializeUser(function(username, callback) {
     }, callback);
 });
 
-passport.shutterstock = new ShutterstockStrategy({
-    clientID: SHUTTERSTOCK_CLIENT_ID,
-    clientSecret: SHUTTERSTOCK_CLIENT_SECRET,
-    callbackURL: URL + '/v1/auth/login/shutterstock/callback',
-    scope: ['licenses.create', 'licenses.view', 'purchases.view', 'user.view']
-  },
-  function(accessToken, refreshToken, profile, callback) {
-    profile.token = accessToken;
-    debug('profile', profile);
-    // To keep the example simple, the user's Shutterstock profile is returned to
-    // represent the logged-in user.
-    return callback(null, profile);
-  }
-)
+var shutterstockConfig = {
+  clientID: SHUTTERSTOCK_CLIENT_ID,
+  clientSecret: SHUTTERSTOCK_CLIENT_SECRET,
+  callbackURL: URL + '/v1/auth/login/shutterstock/callback',
+  scope: ['licenses.create', 'licenses.view', 'purchases.view', 'user.view']
+};
 
 /**
- * Use the ShutterstockStrategy within Passport. Strategies in Passport
+ * Set up the shutterstock passport strategy. Strategies in Passport
  * require a `verify` function, which accept credentials (in this case,
  * an accessToken, refreshToken, and Shutterstock profile), and invoke
  * a callback with a user object.
+ *
+ * @param  {String} accessToken   An accessToken which can be used on subsequent calls
+ * @param  {String} refreshToken  Null
+ * @param  {Object} profile       User Profile in http://portablecontacts.net/draft-spec.html#schema
+ * @param  {Function} callback)   Callback (err, data)
+ * @return {Object}               Not used
+ */
+passport.shutterstock = new ShutterstockStrategy(shutterstockConfig,
+  function(accessToken, refreshToken, profile, callback) {
+    profile.token = accessToken;
+    debug('profile', profile);
+    return callback(null, profile);
+  });
+
+/**
+ * Register the ShutterstockStrategy
  */
 passport.use(passport.shutterstock);
 
+/**
+ * Do any authentication you want to impose on all requests here
+ *
+ * @param  {Request}    req  Express Request
+ * @param  {Response}   res  Express Response
+ * @param  {Function}   next Express next middlware
+ * @return {Object}          Not used
+ */
 function auth(req, res, next) {
-  // if (req.session && req.session.error) {
-  //   var msg = req.session.error;
-  //   req.session.error = undefined;
-  //   // TODO why is this poluting the app?
-  //   req.app.locals.errorMessage = msg;
-  // } else {
-  //   // TODO why is this poluting the app?
-  //   req.app.locals.errorMessage = undefined;
-  // }
+  debug('req.session', req.session);
+  debug('req.user', req.user);
 
   next();
 }

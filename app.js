@@ -16,12 +16,10 @@ var errors = require('./middleware/error');
 var routes = require('./routes/index');
 var authRoutes = require('./routes/auth').router;
 var licenseRoutes = require('./routes/license').router;
-var userRoutes = require('./routes/user');
 
 var app = express();
 
 var env = process.env.NODE_ENV || 'development';
-app.locals.ENV_DEVELOPMENT = env == 'development';
 
 /**
  * Config
@@ -70,7 +68,6 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 app.use('/v1/auth', authRoutes);
 app.use('/v1/licenses', licenseRoutes);
-app.use('/v1/users', userRoutes);
 app.use('/', routes);
 
 /**

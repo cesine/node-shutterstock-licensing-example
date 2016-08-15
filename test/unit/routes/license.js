@@ -44,6 +44,7 @@ describe('license', function() {
   it('should license an image', function(done) {
     req.url = '/v1/licenses/images/123?subscriptionId=456';
 
+    /*jshint camelcase: false */
     var data = {
       data: [{
         image_id: '123',
@@ -53,6 +54,7 @@ describe('license', function() {
         allotment_charge: 0
       }]
     };
+    /*jshint camelcase: true */
 
     var expectations = function(err) {
       expect(res.redirect.calledOnce).to.equal(false);
@@ -109,6 +111,8 @@ describe('license', function() {
   it('should list licenses', function(done) {
     req.url = '/v1/licenses';
 
+
+    /*jshint camelcase: false */
     var data = {
       data: [{
         id: 'i876',
@@ -128,6 +132,7 @@ describe('license', function() {
       page: 1,
       per_page: 20
     };
+    /*jshint camelcase: true */
 
     var expectations = function(err) {
       expect(res.redirect.calledOnce).to.equal(false);

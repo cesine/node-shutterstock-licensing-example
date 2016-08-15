@@ -28,11 +28,12 @@ var licenseImage = function(req, res, next) {
   }
 
   var options = {
-    url: 'https://api.shutterstock.com/v2/images/licenses?subscription_id=' + req.query.subscriptionId,
+    url: 'https://api.shutterstock.com/v2/images/licenses?subscription_id=' +
+      req.query.subscriptionId,
     method: 'POST',
     data: {
       images: [{
-        image_id: req.params.imageId,
+        'image_id': req.params.imageId,
       }]
     },
     headers: {
@@ -52,7 +53,7 @@ var licenseImage = function(req, res, next) {
       var json;
 
       if (err) {
-        next(err)
+        next(err);
       }
 
       try {
@@ -67,7 +68,7 @@ var licenseImage = function(req, res, next) {
 };
 
 /**
- *  Get a list of a user's licenses
+ * Get a list of a user's licenses
  *
  * @param  {Request}    req  Express Request
  * @param  {Response}   res  Express Response
@@ -82,7 +83,7 @@ var list = function(req, res, next) {
   var options = {
     token: req.session.token,
     url: 'https://api.shutterstock.com/v2/images/licenses'
-  }
+  };
   debug('requesting licenses', options);
 
   passport.shutterstock._oauth2.get(
@@ -92,7 +93,7 @@ var list = function(req, res, next) {
       var json;
 
       if (err) {
-        debug(err)
+        debug(err);
         return next(new Error('Failed to fetch your licenses', err));
       }
 

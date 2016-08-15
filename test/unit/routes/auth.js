@@ -32,7 +32,7 @@ describe('auth', function() {
     expect(res.send.calledOnce).to.equal(false);
   });
 
-  it('should render login if user is not defined', function() {
+  it('should redirect user to shutterstock login if user is not defined', function() {
     var req = {
       isAuthenticated: function() {
         return false;
@@ -45,7 +45,26 @@ describe('auth', function() {
 
     auth.getLogin(req, res);
 
-    sinon.assert.calledWith(res.render, 'login', {});
+    sinon.assert.calledWith(res.redirect, '/v1/auth/login/shutterstock');
+  });
+
+  it('should redirect user to shutterstock login if user is not defined', function() {
+    var req = {
+      query: {
+        next: '/v1/licenses'
+      },
+      isAuthenticated: function() {
+        return false;
+      }
+    };
+    var res = {
+      redirect: sinon.spy(),
+      render: sinon.spy(),
+    };
+
+    auth.getLogin(req, res);
+
+    sinon.assert.calledWith(res.redirect, '/v1/auth/login/shutterstock?next=/v1/licenses');
   });
 
   it('should not render login if user is authenticated', function() {
