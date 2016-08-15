@@ -21,7 +21,7 @@ function getLogin(req, res) {
     return res.redirect(finalDestination || '/');
   }
 
-  finalDestination = finalDestination ? '?next=' + finalDestination : ''
+  finalDestination = finalDestination ? '?next=' + finalDestination : '';
 
   debug('will redirect to ' + finalDestination);
   res.redirect('/v1/auth/login/shutterstock' + finalDestination);
@@ -72,7 +72,7 @@ function getShutterstock(req, res, next) {
     }
 
     if (!user) {
-      finalDestination = finalDestination ? '?next=' + finalDestination : ''
+      finalDestination = finalDestination ? '?next=' + finalDestination : '';
       return res.redirect('/v1/auth/login' + finalDestination);
     }
 
@@ -109,7 +109,7 @@ function getShutterstockCallback(req, res, next) {
     }
 
     if (!user) {
-      finalDestination = finalDestination ? '?next=' + finalDestination : ''
+      finalDestination = finalDestination ? '?next=' + finalDestination : '';
       return res.redirect('/v1/auth/login' + finalDestination);
     }
 

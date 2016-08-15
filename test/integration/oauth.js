@@ -48,7 +48,7 @@ describe('/v1/auth', function() {
   });
 
   describe('authorization', function() {
-    it('should implement authorization flow', function(done) {
+    it.skip('should implement authorization flow', function(done) {
       supertest(app)
         .get('/v1/auth/login/shutterstock')
         .expect(302)

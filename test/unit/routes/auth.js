@@ -176,12 +176,14 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           request.user = {
             username: 'test-abc'
           };
           callback(null, req.user, {});
-        }
+        };
       });
 
       auth.getShutterstock(req, res, done);
@@ -209,12 +211,14 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           request.user = {
             username: 'test-abc'
           };
           callback(null, req.user, {});
-        }
+        };
       });
 
       auth.getShutterstock(req, res, done);
@@ -232,9 +236,11 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           callback(new Error('Something happened'));
-        }
+        };
       });
 
       auth.getShutterstock(req, res, function(err) {
@@ -264,12 +270,14 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           request.user = {
             username: 'test-abc'
           };
           callback(null, req.user, {});
-        }
+        };
       });
 
       auth.getShutterstock(req, res, function(err) {
@@ -284,7 +292,7 @@ describe('auth', function() {
     it('should handle missing user', function(done) {
       var res = {
         redirect: function(url) {
-          expect(url).to.equal('/v1/auth/login?next=/hi')
+          expect(url).to.equal('/v1/auth/login?next=/hi');
           done();
         },
         render: sinon.spy(),
@@ -299,9 +307,11 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           callback(null, null, null);
-        }
+        };
       });
 
       auth.getShutterstock(req, res, function(err) {
@@ -340,13 +350,15 @@ describe('auth', function() {
       };
 
       sandbox.stub(passport, 'authenticate', function(name, callback) {
+        /*jshint -W098 */
         return function(request, response, next) {
+          /*jshint +W098 */
           request.user = {
             username: 'test-abc',
             token: '2/efg'
           };
           callback(null, req.user, {});
-        }
+        };
       });
 
       auth.getShutterstockCallback(req, res, done);

@@ -1,3 +1,4 @@
+/* globals Promise */
 'use strict';
 
 var expect = require('chai').expect;
@@ -70,7 +71,8 @@ describe('auth', function() {
       passport.serializeUser({}, function() {
         callback(arguments[0], arguments[1]);
 
-        sinon.assert.calledWith(callback, new Error('Failed to serialize user into session, undefined'));
+        sinon.assert.calledWith(callback,
+          new Error('Failed to serialize user into session, undefined'));
 
         done();
       });
@@ -80,7 +82,7 @@ describe('auth', function() {
       var callback = sinon.spy();
 
       var userFindStub = sandbox.stub(User, 'find');
-      userFindStub.returns(Promise.reject(new Error('test-error')))
+      userFindStub.returns(Promise.reject(new Error('test-error')));
 
       passport.serializeUser({
         username: 'test-abc',
@@ -148,11 +150,15 @@ describe('auth', function() {
       expect(passport.shutterstock._realm).to.equal(null);
       expect(passport.shutterstock.name).to.equal('shutterstock');
       expect(typeof passport.shutterstock._verify).to.equal('function');
-      expect(passport.shutterstock._callbackURL).to.equal('https://localhost:3000/v1/auth/login/shutterstock/callback');
-      expect(passport.shutterstock._userProfileURL).to.equal('https://api.shutterstock.com/v2/user');
+      expect(passport.shutterstock._callbackURL).to.equal(
+        'https://localhost:3000/v1/auth/login/shutterstock/callback');
+      expect(passport.shutterstock._userProfileURL).to.equal(
+        'https://api.shutterstock.com/v2/user');
 
-      expect(passport.shutterstock._oauth2._authorizeUrl).to.equal('https://api.shutterstock.com/v2/oauth/authorize');
-      expect(passport.shutterstock._oauth2._accessTokenUrl).to.equal('https://api.shutterstock.com/v2/oauth/access_token');
+      expect(passport.shutterstock._oauth2._authorizeUrl).to.equal(
+        'https://api.shutterstock.com/v2/oauth/authorize');
+      expect(passport.shutterstock._oauth2._accessTokenUrl).to.equal(
+        'https://api.shutterstock.com/v2/oauth/access_token');
       expect(passport.shutterstock._oauth2._accessTokenName).to.equal('access_token');
       expect(passport.shutterstock._oauth2._authMethod).to.equal('Bearer');
       expect(passport.shutterstock._oauth2._useAuthorizationHeaderForGET).to.equal(true);
